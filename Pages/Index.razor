@@ -1,0 +1,68 @@
+﻿@page "/"
+
+@using AzureManekineko.Data
+@using System.Text
+@inject FortuneDollService FortuneDollService
+@inject IConfiguration Configuration
+
+@if(rows == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+<div class="table-responsive">
+        <table class="table align-middle text-center h-100">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col" class="text-start align-middle">
+                    <img src="manekineko.svg" style="height:7em" class="pull-left d-inline text-white">
+                    </th>
+                <th scope="col" colspan="@colSpan" class="text-end align-middle">
+                    <h1 style="font-size:4em">招き猫</h1>
+            </th>
+            </tr>
+            </thead>
+            <tbody style="font-size:1.5em">
+                @foreach (var row in rows)
+                {
+                    <tr>
+                        @foreach(var doll in row)
+                        {
+                            <td class="@CellClass(doll)">@doll.Id</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    private IEnumerable<IGrouping<int, FortuneDoll>>? rows;
+    private int colSpan = 0;
+    protected override async Task OnInitializedAsync()
+    {
+        var fortuneDolls = await FortuneDollService.GetItemsAsync("select * from c");
+        var groupSize = fortuneDolls.Count / int.Parse(Configuration["rows"]);
+
+        rows = fortuneDolls.OrderBy(doll => int.Parse(doll.Id))
+        .Select((Item, Index) => new { Item, Index })
+        .GroupBy(group => group.Index / groupSize, item => item.Item);
+
+        colSpan = groupSize - 1;
+    }
+
+    private string CellClass(FortuneDoll doll)
+    {
+        List<string> classes = new();
+
+        if(doll.Found)
+            classes.Add("table-primary");
+
+        if(doll.Gold)
+            classes.Add("text-warning");
+
+        return string.Join(' ', classes);
+    }
+}

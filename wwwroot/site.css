@@ -1,0 +1,13 @@
+body {
+    height: 100vh;
+}
+
+.table-responsive{
+    height: 100%;
+    overflow: hidden;
+}
+table.table {
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+}
