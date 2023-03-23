@@ -5,31 +5,31 @@
 @inject FortuneDollService FortuneDollService
 @inject IConfiguration Configuration
 
-@if(rows == null)
+@if (rows == null)
 {
     <p>Loading...</p>
 }
 else
 {
-<div class="table-responsive">
+    <div class="table-responsive">
         <table class="table align-middle text-center h-100">
             <thead class="thead-light">
                 <tr>
                     <th scope="col" class="text-start align-middle">
-                    <img src="manekineko.svg" style="height:7em" class="pull-left d-inline text-white">
+                        <img src="manekineko.svg" style="height:7em" class="pull-left d-inline text-white">
                     </th>
-                <th scope="col" colspan="@colSpan" class="text-end align-middle">
-                    <h1 style="font-size:4em">招き猫</h1>
-            </th>
-            </tr>
+                    <th scope="col" colspan="@colSpan" class="text-end align-middle">
+                        <h1 style="font-size:4em">招き猫</h1>
+                    </th>
+                </tr>
             </thead>
             <tbody style="font-size:1.5em">
                 @foreach (var row in rows)
                 {
                     <tr>
-                        @foreach(var doll in row)
+                        @foreach (var doll in row)
                         {
-                            <td class="@CellClass(doll)">@doll.Id</td>
+                            <td class="@(doll.Found ? "table-primary" : "") @(doll.Gold ? "text-warning" : "")">@doll.Id</td>
                         }
                     </tr>
                 }
@@ -51,18 +51,5 @@ else
         .GroupBy(group => group.Index / groupSize, item => item.Item);
 
         colSpan = groupSize - 1;
-    }
-
-    private string CellClass(FortuneDoll doll)
-    {
-        List<string> classes = new();
-
-        if(doll.Found)
-            classes.Add("table-primary");
-
-        if(doll.Gold)
-            classes.Add("text-warning");
-
-        return string.Join(' ', classes);
     }
 }
